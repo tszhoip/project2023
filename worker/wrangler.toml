@@ -1,0 +1,12 @@
+name = "air-font-delivery"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Public URL of your Supabase project, e.g. https://xxxxx.supabase.co
+# Set the anon key as a secret instead: `wrangler secret put SUPABASE_ANON_KEY`
+[vars]
+SUPABASE_URL = "https://your-project.supabase.co"
+
+[[r2_buckets]]
+binding = "FONT_BUCKET"
+bucket_name = "air-font-private"
