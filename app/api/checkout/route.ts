@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { FONT } from "@/lib/font";
+import { getFont, isBuyable } from "@/lib/fonts";
 
 export async function POST(request: NextRequest) {
   const origin = request.nextUrl.origin;
+
+  // The browser only says *which* font. Name and price always come from the catalog.
+  const form = await request.formData();
+  const font = getFont(String(form.get("font") ?? ""));
+  if (!font || !isBuyable(font)) {
+    return NextResponse.json({ error: "This font isn't available to buy." }, { status: 400 });
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -13,9 +20,9 @@ export async function POST(request: NextRequest) {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: FONT.priceUsd * 100,
+          unit_amount: font.priceUsd * 100,
           product_data: {
-            name: `${FONT.name} — Web License`,
+            name: `${font.name} — Web License`,
             description: "Domain-locked web license. Includes all future updates.",
           },
         },
@@ -30,10 +37,10 @@ export async function POST(request: NextRequest) {
       },
     ],
     metadata: {
-      font_slug: FONT.slug,
+      font_slug: font.slug,
     },
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/`,
+    cancel_url: `${origin}/fonts/${font.slug}`,
   });
 
   if (!session.url) {

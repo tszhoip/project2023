@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# font masters (kept out of the public repo/site)
+/fonts-src/

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { FONT } from "@/lib/font";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,9 +25,21 @@ const airBold = localFont({
   display: "swap",
 });
 
+const hkgBold = localFont({
+  src: "../public/fonts/HKG-Bold.woff2",
+  variable: "--hkg-bold-font",
+  display: "swap",
+});
+
+const n1MonoRegular = localFont({
+  src: "../public/fonts/N1-Mono-Regular.woff2",
+  variable: "--n1-mono-regular-font",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: `${FONT.name} — ${FONT.designer}`,
-  description: FONT.tagline,
+  title: "MHZ Design Office — Fonts",
+  description: "Display fonts by MHZ Design Office. One price, web license, updates included.",
 };
 
 export default function RootLayout({
@@ -39,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${airBlack.variable} ${airBold.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${airBlack.variable} ${airBold.variable} ${hkgBold.variable} ${n1MonoRegular.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}

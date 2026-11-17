@@ -1,28 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { FONT } from "@/lib/font";
-
-const DEFAULT_TEXT = "STENCILED FOR SIGNAGE";
+import type { FontDef } from "@/lib/fonts";
+import { ColorControls } from "./ColorControls";
 
 const ALIGNMENTS = ["left", "center", "right", "justify"] as const;
 type Alignment = (typeof ALIGNMENTS)[number];
 
-const weightClass: Record<string, string> = {
-  Black: "font-air-black",
-  Bold: "font-air-bold",
-};
-
-export function TestTool() {
-  const [text, setText] = useState(DEFAULT_TEXT);
+export function TestTool({ font }: { font: FontDef }) {
+  const [text, setText] = useState("STENCILED FOR SIGNAGE");
   const [size, setSize] = useState(72);
   const [tracking, setTracking] = useState(0);
   const [leading, setLeading] = useState(1.05);
   const [alignment, setAlignment] = useState<Alignment>("left");
-  const [weight, setWeight] = useState<(typeof FONT.weights)[number]["name"]>(
-    FONT.weights[0].name
-  );
-  const [inverted, setInverted] = useState(false);
+  const [weightName, setWeightName] = useState(font.weights[0].name);
+  const [background, setBackground] = useState("#ffffff");
+  const [foreground, setForeground] = useState("#000000");
+
+  const weight = font.weights.find((w) => w.name === weightName) ?? font.weights[0];
 
   return (
     <section id="test" className="border-b border-border">
@@ -85,45 +80,47 @@ export function TestTool() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-muted">Weight</span>
-            {FONT.weights.map((w) => (
-              <button
-                key={w.name}
-                onClick={() => setWeight(w.name)}
-                className={`rounded-full border px-3 py-1 transition ${
-                  weight === w.name
-                    ? "border-accent text-accent"
-                    : "border-border text-muted hover:text-foreground"
-                }`}
-              >
-                {w.name}
-              </button>
-            ))}
-          </div>
+          {font.weights.length > 1 && (
+            <div className="flex items-center gap-2">
+              <span className="text-muted">Weight</span>
+              {font.weights.map((w) => (
+                <button
+                  key={w.name}
+                  onClick={() => setWeightName(w.name)}
+                  className={`rounded-full border px-3 py-1 transition ${
+                    weightName === w.name
+                      ? "border-accent text-accent"
+                      : "border-border text-muted hover:text-foreground"
+                  }`}
+                >
+                  {w.name}
+                </button>
+              ))}
+            </div>
+          )}
 
-          <button
-            onClick={() => setInverted((v) => !v)}
-            className="ml-auto rounded-full border border-border px-3 py-1 text-muted transition hover:text-foreground"
-          >
-            {inverted ? "Light on dark" : "Dark on light"}
-          </button>
+          <ColorControls
+            className="md:ml-auto"
+            background={background}
+            foreground={foreground}
+            onBackground={setBackground}
+            onForeground={setForeground}
+          />
         </div>
 
         <div
           className="mt-8 rounded-lg border border-border p-6 md:p-10"
-          style={{
-            background: inverted ? "#0b0b0c" : "#f2f2f0",
-            color: inverted ? "#f2f2f0" : "#0b0b0c",
-          }}
+          style={{ background, color: foreground }}
         >
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={4}
             spellCheck={false}
-            className={`${weightClass[weight]} w-full resize-y bg-transparent outline-none`}
+            aria-label={`Test text for ${font.name}`}
+            className="w-full resize-y bg-transparent text-inherit outline-none"
             style={{
+              fontFamily: weight.cssFamily,
               fontSize: `${size}px`,
               letterSpacing: `${tracking}em`,
               lineHeight: leading,

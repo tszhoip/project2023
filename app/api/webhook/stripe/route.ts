@@ -3,7 +3,6 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeDomain } from "@/lib/domain";
-import { FONT } from "@/lib/font";
 
 // Grants a license for a completed checkout. Safe to call more than once for
 // the same session — Stripe retries webhooks, so every step is idempotent.
@@ -27,12 +26,12 @@ async function fulfillCheckout(session: Stripe.Checkout.Session) {
     .maybeSingle();
   if (existing) return;
 
-  const { data: font } = await admin
-    .from("fonts")
-    .select("id")
-    .eq("slug", (session.metadata?.font_slug as string) ?? FONT.slug)
-    .single();
-  if (!font) throw new Error(`Unknown font_slug in checkout session ${session.id}`);
+  // No default: a session without a font must never silently grant another one.
+  const fontSlug = session.metadata?.font_slug;
+  if (!fontSlug) throw new Error(`Missing font_slug in checkout session ${session.id}`);
+
+  const { data: font } = await admin.from("fonts").select("id").eq("slug", fontSlug).single();
+  if (!font) throw new Error(`Unknown font_slug "${fontSlug}" in checkout session ${session.id}`);
 
   // Idempotent: creates the auth user if they don't exist yet, otherwise
   // returns the existing one. No email is sent from here — buyers sign in

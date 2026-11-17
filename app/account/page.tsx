@@ -2,13 +2,15 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { addDomain, removeDomain, signOut } from "./actions";
-import { FONT } from "@/lib/font";
+import { getFont } from "@/lib/fonts";
+
+type LicensedFont = { name: string; slug: string };
 
 type LicenseRow = {
   id: string;
   status: string;
   created_at: string;
-  font: { name: string; slug: string } | { name: string; slug: string }[] | null;
+  font: LicensedFont | LicensedFont[] | null;
   license_domains: { id: string; domain: string }[] | null;
 };
 
@@ -31,8 +33,8 @@ export default async function AccountPage() {
   return (
     <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
       <div className="flex items-center justify-between">
-        <Link href="/" className="font-air-black text-2xl">
-          {FONT.name}
+        <Link href="/" className="text-2xl font-semibold tracking-tight">
+          MHZ
         </Link>
         <form action={signOut}>
           <button type="submit" className="text-sm text-muted hover:text-foreground">
@@ -47,16 +49,24 @@ export default async function AccountPage() {
       {!licenses || licenses.length === 0 ? (
         <p className="mt-8 text-muted">
           No licenses on this account yet. Purchases can take a moment to appear — refresh in a
-          few seconds, or <Link href="/#license" className="underline">get {FONT.name}</Link>.
+          few seconds, or{" "}
+          <Link href="/" className="underline">
+            browse the fonts
+          </Link>
+          .
         </p>
       ) : (
         <div className="mt-8 space-y-10">
           {licenses.map((license) => {
-            const font = Array.isArray(license.font) ? license.font[0] : license.font;
+            const licensed = Array.isArray(license.font) ? license.font[0] : license.font;
+            // The catalog holds weights and formats; the row only says which font was bought.
+            const font = licensed ? getFont(licensed.slug) : undefined;
             return (
               <div key={license.id} className="rounded-lg border border-border p-6">
                 <div className="flex items-center justify-between">
-                  <p className="font-air-bold text-lg">{font?.name ?? FONT.name}</p>
+                  <p className="text-lg" style={{ fontFamily: font?.weights[0].cssFamily }}>
+                    {licensed?.name ?? "Font"}
+                  </p>
                   <span className="rounded-full border border-border px-3 py-1 text-xs uppercase text-muted">
                     {license.status}
                   </span>
@@ -98,39 +108,43 @@ export default async function AccountPage() {
                   </form>
                 </div>
 
-                <div className="mt-6">
-                  <p className="text-sm uppercase tracking-wide text-muted">Embed</p>
-                  <p className="mt-2 text-sm text-muted">
-                    Add this to your CSS. It only serves the font from domains registered above.
-                  </p>
-                  <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-surface p-4 text-xs">
-{FONT.weights
+                {font && (
+                  <>
+                    <div className="mt-6">
+                      <p className="text-sm uppercase tracking-wide text-muted">Embed</p>
+                      <p className="mt-2 text-sm text-muted">
+                        Add this to your CSS. It only serves the font from domains registered above.
+                      </p>
+                      <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-surface p-4 text-xs">
+{font.weights
   .map(
     (w) => `@font-face {
   font-family: "${w.fontFamily}";
-  src: url("${cdnBase}/${FONT.slug}/${w.name.toLowerCase()}.woff2") format("woff2");
+  src: url("${cdnBase}/${font.slug}/${w.name.toLowerCase()}.woff2") format("woff2");
   font-weight: ${w.cssWeight};
   font-display: swap;
 }`
   )
   .join("\n\n")}
-                  </pre>
-                </div>
+                      </pre>
+                    </div>
 
-                <div className="mt-6">
-                  <p className="text-sm uppercase tracking-wide text-muted">Download</p>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    {FONT.weights.map((w) => (
-                      <a
-                        key={w.name}
-                        href={`/api/download/${w.name.toLowerCase()}?license_id=${license.id}`}
-                        className="rounded-md border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
-                      >
-                        {w.name} ({FONT.formats.join("/")})
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                    <div className="mt-6">
+                      <p className="text-sm uppercase tracking-wide text-muted">Download</p>
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {font.weights.map((w) => (
+                          <a
+                            key={w.name}
+                            href={`/api/download/${w.name.toLowerCase()}?license_id=${license.id}`}
+                            className="rounded-md border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
+                          >
+                            {w.name} ({font.formats.join("/")})
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}

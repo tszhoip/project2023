@@ -16,7 +16,7 @@ create table if not exists fonts (
 );
 
 insert into fonts (slug, name, price_usd)
-values ('air', 'AIR™', 30)
+values ('air', 'AIR™', 30), ('n1-mono', 'N1 MONO', 30)
 on conflict (slug) do nothing;
 
 -- One row per purchase. Created by the Stripe webhook after a successful

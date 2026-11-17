@@ -104,3 +104,30 @@ a pass from whoever writes final copy for MHZ Design Office.
 Multiple fonts/products, version tiers, non-web (desktop/app) licenses,
 license revocation UI, admin tooling for managing licenses by hand — all
 deferred per the brief.
+
+## Adding a font
+
+The home page (`/`) and every `/fonts/<slug>` page are generated from the catalog in
+`lib/fonts/`. To add a font:
+
+1. Convert the OTF to WOFF2 into `public/fonts/` (keep the OTF master in `fonts-src/`, which is
+   gitignored — never put masters in `public/`).
+2. Register it in `app/layout.tsx` with `next/font/local` and a CSS variable (e.g.
+   `--foo-bold-font`), and add that variable to the `<html>` className.
+3. Copy `lib/fonts/air.ts` to `lib/fonts/<slug>.ts` and fill it in. Point each weight's
+   `cssFamily` at the variable from step 2. List only glyphs that actually have outlines.
+   `usageGroups: []` hides the gallery.
+4. Add it to `FONTS` in `lib/fonts/index.ts` (the array order is the catalog order).
+5. To sell it: set `status: "available"`, upload `<slug>/<weight>.woff2` to R2, and insert a
+   row into the `fonts` table (`slug`, `name`, `price_usd`) in Supabase. The webhook refuses
+   sessions for a slug that has no row. `status: "in-progress"` shows the font but hides buying.
+
+Checkout takes only the font slug from the browser; name and price always come from the catalog.
+
+### N1 MONO (live in the catalog)
+
+N1 MONO is `status: "available"`. Before it can be bought in production, run this in the Supabase SQL editor and upload `n1-mono/regular.woff2` to the R2 bucket:
+
+```sql
+insert into fonts (slug, name, price_usd) values ('n1-mono', 'N1 MONO', 30) on conflict (slug) do nothing;
+```

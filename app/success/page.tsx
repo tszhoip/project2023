@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { stripe } from "@/lib/stripe";
-import { FONT } from "@/lib/font";
+import { getFont, type FontDef } from "@/lib/fonts";
 
 export default async function SuccessPage({
   searchParams,
@@ -10,10 +10,12 @@ export default async function SuccessPage({
   const { session_id } = await searchParams;
 
   let email: string | null = null;
+  let font: FontDef | undefined;
   if (session_id) {
     try {
       const session = await stripe.checkout.sessions.retrieve(session_id);
       email = session.customer_details?.email ?? null;
+      font = getFont(session.metadata?.font_slug ?? "");
     } catch {
       email = null;
     }
@@ -21,7 +23,9 @@ export default async function SuccessPage({
 
   return (
     <main className="mx-auto flex max-w-xl flex-1 flex-col justify-center px-6 py-24">
-      <p className="font-air-black text-3xl">{FONT.name}</p>
+      <p className="text-3xl" style={{ fontFamily: font?.weights[0].cssFamily }}>
+        {font?.name ?? "MHZ"}
+      </p>
       <h1 className="mt-6 text-2xl">You&apos;re in.</h1>
       <p className="mt-4 text-muted">
         {email

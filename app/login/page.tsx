@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { FONT } from "@/lib/font";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,8 +21,8 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex max-w-sm flex-1 flex-col justify-center px-6 py-24">
-      <Link href="/" className="font-air-black text-2xl">
-        {FONT.name}
+      <Link href="/" className="text-2xl font-semibold tracking-tight">
+        MHZ
       </Link>
       <h1 className="mt-8 text-xl">Sign in to your account</h1>
       <p className="mt-2 text-sm text-muted">
