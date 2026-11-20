@@ -25,7 +25,7 @@ export function GlyphSet({ font }: { font: FontDef }) {
                 <button
                   key={w.name}
                   onClick={() => setWeightName(w.name)}
-                  className={`rounded-full border px-3 py-1 transition ${
+                  className={`border px-3 py-1 transition ${
                     weightName === w.name
                       ? "border-accent text-accent"
                       : "border-border text-muted hover:text-foreground"

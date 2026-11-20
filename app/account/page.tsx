@@ -33,11 +33,11 @@ export default async function AccountPage() {
   return (
     <main className="mx-auto max-w-3xl flex-1 px-6 py-16">
       <div className="flex items-center justify-between">
-        <Link href="/" className="text-2xl font-semibold tracking-tight">
+        <Link href="/" className="text-[24px] leading-[1.2] font-medium transition-opacity hover:opacity-60 focus-visible:opacity-60">
           MHZ
         </Link>
         <form action={signOut}>
-          <button type="submit" className="text-sm text-muted hover:text-foreground">
+          <button type="submit" className="text-sm transition-opacity hover:opacity-60 focus-visible:opacity-60">
             Sign out
           </button>
         </form>
@@ -50,7 +50,7 @@ export default async function AccountPage() {
         <p className="mt-8 text-muted">
           No licenses on this account yet. Purchases can take a moment to appear — refresh in a
           few seconds, or{" "}
-          <Link href="/" className="underline">
+          <Link href="/" className="text-foreground transition-opacity hover:opacity-60 focus-visible:opacity-60">
             browse the fonts
           </Link>
           .
@@ -83,7 +83,7 @@ export default async function AccountPage() {
                         {d.domain}
                         <form action={removeDomain}>
                           <input type="hidden" name="domain_id" value={d.id} />
-                          <button type="submit" className="text-muted hover:text-accent">
+                          <button type="submit" className="transition-opacity hover:opacity-60 focus-visible:opacity-60">
                             Remove
                           </button>
                         </form>
@@ -101,7 +101,7 @@ export default async function AccountPage() {
                     />
                     <button
                       type="submit"
-                      className="rounded-md border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
+                      className="border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
                     >
                       Add domain
                     </button>
@@ -136,7 +136,7 @@ export default async function AccountPage() {
                           <a
                             key={w.name}
                             href={`/api/download/${w.name.toLowerCase()}?license_id=${license.id}`}
-                            className="rounded-md border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
+                            className="border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent"
                           >
                             {w.name} ({font.formats.join("/")})
                           </a>

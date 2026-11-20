@@ -58,7 +58,7 @@ export function UsageGallery({ font }: { font: FontDef }) {
                   onClick={() => setIndex(i)}
                   aria-label={`${slide.id} ${slide.title}`}
                   aria-current={i === index}
-                  className={`block w-full overflow-hidden rounded-sm border transition ${
+                  className={`block w-full overflow-hidden border transition ${
                     i === index
                       ? "border-accent"
                       : "border-border opacity-50 hover:opacity-100"
@@ -124,12 +124,12 @@ export function UsageGallery({ font }: { font: FontDef }) {
               </div>
             </div>
 
-            <div className="mt-3 flex gap-6 text-sm text-muted">
-              <button onClick={() => go(index - 1)} className="transition hover:text-foreground">
-                ← Prev
+            <div className="mt-3 flex gap-6 text-sm">
+              <button onClick={() => go(index - 1)} className="transition-opacity hover:opacity-60 focus-visible:opacity-60">
+                Prev
               </button>
-              <button onClick={() => go(index + 1)} className="transition hover:text-foreground">
-                Next →
+              <button onClick={() => go(index + 1)} className="transition-opacity hover:opacity-60 focus-visible:opacity-60">
+                Next
               </button>
             </div>
           </div>

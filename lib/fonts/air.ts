@@ -27,6 +27,7 @@ export const AIR: FontDef = {
     },
   ],
   previewText: "Now boarding",
+  homeSize: 144,
   uppercaseOnly: true,
   story: [
     "AIR™ started as a set of departure-board letterforms, cut at the corners like they'd been stamped through a stencil rather than drawn. Every diagonal terminates in a hard chamfer, the same angle repeated at every scale, so the face reads the same on a hotel room key as it does across the side of a jet.",

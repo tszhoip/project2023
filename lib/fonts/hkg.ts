@@ -21,6 +21,7 @@ export const HKG: FontDef = {
     },
   ],
   previewText: "Now boarding",
+  homeSize: 112,
   uppercaseOnly: true,
   story: [
     "HKG is an unfinished draft. Only the capitals are drawn so far; numerals and punctuation are still empty placeholders, and everything else is on the bench.",

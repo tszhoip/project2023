@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { FontDef } from "@/lib/fonts";
+import { isBuyable, type FontDef } from "@/lib/fonts";
 import { ColorControls } from "./ColorControls";
 import { CtaButton } from "./CtaButton";
 
@@ -14,7 +14,6 @@ type Props = {
 
 export function FontBlock({ font, text, onTextChange }: Props) {
   const [weightName, setWeightName] = useState(font.weights[0].name);
-  const [size, setSize] = useState(96);
   const [background, setBackground] = useState("#ffffff");
   const [foreground, setForeground] = useState("#000000");
 
@@ -23,7 +22,7 @@ export function FontBlock({ font, text, onTextChange }: Props) {
   return (
     <section
       id={font.slug}
-      className="border-b border-border"
+      className="h-[clamp(400px,50svh,800px)] border-b border-border"
       style={
         {
           background,
@@ -33,79 +32,78 @@ export function FontBlock({ font, text, onTextChange }: Props) {
         } as React.CSSProperties
       }
     >
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      <div className="mx-auto flex h-full max-w-6xl flex-col px-6 py-8">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
-          <span
-            className="rounded-full border border-current/40 px-4 py-1.5"
-            style={{ fontFamily: weight.cssFamily }}
+          {/* Name and weight are one control: the select sits invisibly over the label. */}
+          <label
+            className={`relative inline-block ${
+              font.weights.length > 1
+                ? "transition-opacity hover:opacity-60 has-[:focus-visible]:opacity-60"
+                : ""
+            }`}
           >
-            {font.name}
-          </span>
-
-          {font.weights.length > 1 ? (
-            <select
-              value={weightName}
-              onChange={(e) => setWeightName(e.target.value)}
-              aria-label={`${font.name} weight`}
-              className="rounded-full border border-current/40 bg-transparent px-3 py-1.5"
-            >
-              {font.weights.map((w) => (
-                <option key={w.name} value={w.name} className="text-black">
-                  {w.name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="opacity-60">{weight.name}</span>
-          )}
-
-          <label className="flex items-center gap-3">
-            <span className="opacity-60">Size</span>
-            <input
-              type="range"
-              min={24}
-              max={240}
-              value={size}
-              onChange={(e) => setSize(Number(e.target.value))}
-              aria-label={`${font.name} size`}
-              className="accent-current"
-            />
-            <span className="w-12 tabular-nums opacity-60">{size}px</span>
+            <span>{font.name}</span> <span>{weight.name}</span>
+            {font.weights.length > 1 && (
+              <>
+                <select
+                  value={weightName}
+                  onChange={(e) => setWeightName(e.target.value)}
+                  aria-label={`${font.name} weight`}
+                  className="absolute inset-0 size-full cursor-pointer opacity-0"
+                >
+                  {font.weights.map((w) => (
+                    <option key={w.name} value={w.name} className="text-black">
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
           </label>
 
           <ColorControls
-            className="md:ml-auto"
             background={background}
             foreground={foreground}
             onBackground={setBackground}
             onForeground={setForeground}
+            showHex={false}
           />
+
+          <div className="ml-auto flex items-center gap-6">
+            {!isBuyable(font) && <CtaButton font={font} size="sm" />}
+            <Link
+              href={`/fonts/${font.slug}`}
+              aria-label={`Learn more about ${font.name}`}
+              title="Learn more"
+              className="flex size-6 items-center justify-center text-base leading-none transition-opacity hover:opacity-60 focus-visible:opacity-60"
+            >
+              →
+            </Link>
+          </div>
         </div>
 
-        <textarea
-          value={text}
-          onChange={(e) => onTextChange(e.target.value)}
-          spellCheck={false}
-          aria-label={`Test text for ${font.name}`}
-          // Phones cap the size by screen width so words stay whole; md+ uses the slider as-is.
-          className="mt-8 block min-h-[2.4em] w-full resize-none overflow-hidden bg-transparent text-[length:min(var(--fs),15vw)] text-inherit outline-none field-sizing-content md:text-[length:var(--fs)]"
-          style={
-            {
-              fontFamily: weight.cssFamily,
-              "--fs": `${size}px`,
-              lineHeight: 1.02,
-            } as React.CSSProperties
-          }
-        />
-
-        <div className="mt-8 flex items-center justify-between gap-4 text-sm">
-          <Link
-            href={`/fonts/${font.slug}`}
-            className="underline underline-offset-4 transition hover:opacity-70"
-          >
-            Learn details →
-          </Link>
-          <CtaButton font={font} size="sm" />
+        <div className="mt-6 flex min-h-0 flex-1 items-center overflow-hidden">
+          {/* One line only: anything wider than the card is simply cut off at the edge. */}
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => onTextChange(e.target.value)}
+            onBlur={(e) => {
+              e.currentTarget.scrollLeft = 0;
+            }}
+            spellCheck={false}
+            aria-label={`Test text for ${font.name}`}
+            className="block w-full overflow-hidden whitespace-nowrap bg-transparent text-center text-[length:var(--fs)] text-inherit outline-none"
+            style={
+              {
+                fontFamily: weight.cssFamily,
+                // Fixed per-font size; below ~1200px wide it scales down so the default line still fits.
+                "--fs": `min(${font.homeSize}px, ${(font.homeSize / 12).toFixed(2)}vw)`,
+                // Tall enough for every font's own ascent + descent (N1 MONO needs 1.33), or the input scrolls vertically.
+                lineHeight: 1.4,
+              } as React.CSSProperties
+            }
+          />
         </div>
       </div>
     </section>

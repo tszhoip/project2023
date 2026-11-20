@@ -21,7 +21,7 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex max-w-sm flex-1 flex-col justify-center px-6 py-24">
-      <Link href="/" className="text-2xl font-semibold tracking-tight">
+      <Link href="/" className="text-[24px] leading-[1.2] font-medium transition-opacity hover:opacity-60 focus-visible:opacity-60">
         MHZ
       </Link>
       <h1 className="mt-8 text-xl">Sign in to your account</h1>
@@ -46,7 +46,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="rounded-full bg-accent px-6 py-3 font-semibold text-[#0b0b0c] transition hover:brightness-110 disabled:opacity-60"
+            className="bg-accent px-6 py-3 font-semibold text-[#0b0b0c] transition hover:brightness-110 disabled:opacity-60"
           >
             {status === "sending" ? "Sending…" : "Send magic link"}
           </button>

@@ -69,7 +69,7 @@ export function TestTool({ font }: { font: FontDef }) {
               <button
                 key={a}
                 onClick={() => setAlignment(a)}
-                className={`rounded-full border px-3 py-1 capitalize transition ${
+                className={`border px-3 py-1 capitalize transition ${
                   alignment === a
                     ? "border-accent text-accent"
                     : "border-border text-muted hover:text-foreground"
@@ -87,7 +87,7 @@ export function TestTool({ font }: { font: FontDef }) {
                 <button
                   key={w.name}
                   onClick={() => setWeightName(w.name)}
-                  className={`rounded-full border px-3 py-1 transition ${
+                  className={`border px-3 py-1 transition ${
                     weightName === w.name
                       ? "border-accent text-accent"
                       : "border-border text-muted hover:text-foreground"

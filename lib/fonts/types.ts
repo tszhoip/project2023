@@ -25,6 +25,8 @@ export type FontDef = {
   weights: readonly FontWeight[];
   /** Default text shown in the catalog block, before anyone edits it. */
   previewText: string;
+  /** Display size (px) on the home-page block at desktop width; scales down with the viewport. */
+  homeSize: number;
   /** Lowercase keys render the same capital forms. */
   uppercaseOnly: boolean;
   story: readonly string[];

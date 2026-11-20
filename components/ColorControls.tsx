@@ -6,26 +6,29 @@ type Props = {
   onBackground: (value: string) => void;
   onForeground: (value: string) => void;
   className?: string;
+  /** Show the hex value next to each swatch. */
+  showHex?: boolean;
 };
 
 function Swatch({
   label,
   value,
   onChange,
+  showHex,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  showHex: boolean;
 }) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-2 rounded-full has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2">
-      <span className="opacity-60">{label}</span>
+    <label title={`${label} colour`} className="inline-flex cursor-pointer items-center gap-2 rounded-full has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2">
       <span
-        className="size-4 rounded-full border border-current/40"
+        className="size-6 rounded-full border border-current/40"
         style={{ background: value }}
         aria-hidden
       />
-      <span className="font-mono text-xs uppercase tabular-nums">{value}</span>
+      {showHex && <span className="text-xs uppercase tabular-nums">{value}</span>}
       <input
         type="color"
         value={value}
@@ -44,21 +47,24 @@ export function ColorControls({
   onBackground,
   onForeground,
   className = "",
+  showHex = true,
 }: Props) {
   return (
-    <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-sm ${className}`}>
-      <Swatch label="BG" value={background} onChange={onBackground} />
-      <Swatch label="Text" value={foreground} onChange={onForeground} />
+    <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 text-sm ${className}`}>
+      <Swatch label="BG" value={background} onChange={onBackground} showHex={showHex} />
       <button
         type="button"
         onClick={() => {
           onBackground(foreground);
           onForeground(background);
         }}
-        className="rounded-full border border-current/40 px-3 py-1 text-xs transition hover:border-current"
+        aria-label="Swap background and text colours"
+        title="Swap colours"
+        className="flex size-6 items-center justify-center text-base leading-none outline-none transition hover:opacity-60 focus-visible:opacity-60"
       >
-        Swap
+        ↔
       </button>
+      <Swatch label="Text" value={foreground} onChange={onForeground} showHex={showHex} />
     </div>
   );
 }

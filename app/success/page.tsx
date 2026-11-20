@@ -36,7 +36,7 @@ export default async function SuccessPage({
       </p>
       <Link
         href="/login"
-        className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-[#0b0b0c] transition hover:brightness-110"
+        className="mt-8 inline-flex w-fit items-center gap-2 bg-accent px-6 py-3 font-semibold text-[#0b0b0c] transition hover:brightness-110"
       >
         Sign in to your account
       </Link>
